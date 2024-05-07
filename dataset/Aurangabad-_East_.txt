@@ -1,0 +1,8 @@
+Candidate,              Party ,  Votes,    Percentage
+1 ATUL MORESHWAR SAVE,  BJP,      93966,      48.10%
+2 Dr. ABDUL GAFFAR QUADRI SYED,  AIMIM,    80036,      40.97%
+3 KALEEM CHOTU QURAISHI,  SP,         5555,      2.84%
+4 KISHOR VISHVANATH MHASKE, BSP,       3970,       2.03%
+5 ISA YASEEN,           MBT,       2395,       1.23%
+6 NOTA,                 NOTA,      1953,       1.00%
+Total Voting Turnout,    NA,       195347,      61.20%
