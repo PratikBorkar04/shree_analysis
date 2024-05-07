@@ -3,11 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Basic HTML Page</title>
+    <title>Analysis Page</title>
+    <!-- Include Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color:  #3b8aa1;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start; /* Align items to the start of the container */
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 8px; /* Add space below labels */
+    display: block; /* Make labels block-level for consistent spacing */
+}
+
+select {
+    width: 100%; /* Full width for dropdowns */
+    padding: 8px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #3b8aa1;
+    color: #fff;
+    border: none;
+    padding: 6px 50px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-top: 24px; /* Adjust top margin to align with dropdowns */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.alert {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    margin-top: 20px;
+    display: none;
+}
+
+    </style>
 </head>
 <body>
     <header>
-        <h1>Home page</h1>
+        <h1>State and Constituency Analysis</h1>
     </header>
+
+    <div class="container">
+        <div>
+            <label for="state">State:</label>
+            <select id="state" class="select2" style="width: 250px;">
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Karnataka">Karnataka</option>
+                <!-- Add more states here if needed -->
+            </select>
+        </div>
+
+        <div>
+            <label for="constituency">Constituency:</label>
+            <select id="constituency" class="select2" style="width: 250px;">
+                <!-- JavaScript will populate this dropdown -->
+            </select>
+        </div>
+
+        <button onclick="checkData()">Check</button>
+
+        <div class="alert" id="resultAlert"></div>
+    </div>
+
+    <!-- Include jQuery (required by Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include Select2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        // Initialize Select2 for both select elements with the "select2" class
+        $('.select2').select2();
+
+        // Array of constituencies
+        const constituencies = [
+            "Akkalkuwa", "Shahada", "Nandurbar", "Navapur", "Sakri", "Dhule Rural", "Dhule City", "Sindkheda", "Shirpur",
+            "Chopda", "Raver", "Bhusawal", "Jalgaon City", "Jalgaon Rural", "Amalner", "Erandol", "Chalisgaon",
+            "Pachora", "Jamner", "Muktainagar", "Malkapur", "Buldhana", "Chikhali", "Sindkhed Raja",
+            "Mehkar", "Khamgaon", "Jalgaon (Jamod)", "Akot", "Balapur", "Akola West", "Akola East", "Murtizapur",
+            "Risod", "Washim", "Karanja", "Dhamangaon Railway", "Badnera", "Amravati", "Teosa", "Daryapur", "Melghat",
+            "Achalpur", "Morshi", "Arvi", "Deoli", "Hinganghat", "Wardha", "Katol", "Savner", "Hingna", "Umred",
+            "Nagpur South West", "Nagpur South", "Nagpur East", "Nagpur Central", "Nagpur West", "Nagpur North",
+            "Kamthi", "Ramtek", "Tumsar", "Bhandara", "Sakoli", "Arjuni-Morgaon", "Tirora", "Gondiya", "Amgaon",
+            "Armori", "Gadchiroli", "Aheri", "Rajura", "Chandrapur", "Ballarpur", "Bramhapuri", "Chimur", "Warora",
+            "Wani", "Ralegaon", "Yavatmal", "Digras", "Arni", "Pusad", "Umarkhed", "Kinwat", "Hadgaon", "Bhokar",
+            "Nanded North", "Nanded South", "Loha", "Naigaon", "Deglur", "Mukhed", "Basmath", "Kalamnuri", "Jintur",
+            "Parbhani", "Gangakhed", "Pathri", "Partur", "Ghansawangi", "Jalna", "Badnapur", "Bhokardan", "Sillod",
+            "Kannad", "Phulambri", "Aurangabad Central", "Aurangabad West", "Aurangabad East", "Paithan", "Gangapur",
+            "Vaijapur", "Nandgaon", "Malegaon Central", "Malegaon Outer", "Baglan", "Kalwan", "Chandwad", "Yevla",
+            "Sinnar", "Niphad", "Dindori", "Nashik East", "Nashik Central", "Nashik West", "Deolali", "Igatpuri",
+            "Dahanu", "Vikramgad", "Palghar", "Boisar", "Nalasopara", "Vasai", "Bhiwandi Rural", "Shahapur", "Bhiwandi West",
+            "Bhiwandi East", "Kalyan West", "Murbad", "Ambernath", "Ulhasnagar", "Kalyan East", "Dombivali", "Kalyan Rural",
+            "Mira Bhayandar", "Ovala-Majiwada", "Kopri-Pachpakhadi", "Thane", "Mumbra-Kalwa", "Airoli", "Belapur", "Borivali",
+            "Dahisar", "Magathane", "Mulund", "Vikhroli", "Bhandup West", "Jogeshwari East", "Dindoshi", "Kandivali East",
+            "Charkop", "Malad West", "Goregaon", "Versova", "Andheri West", "Andheri East", "Vile Parle", "Chandivali",
+            "Ghatkopar West", "Ghatkopar East", "Mankhurd Shivaji Nagar", "Anushakti Nagar", "Chembur", "Kurla", "Kalina",
+            "Vandre East", "Vandre West", "Dharavi", "Sion Koliwada", "Wadala", "Mahim", "Worli", "Shivadi", "Byculla",
+            "Malabar Hill", "Mumbadevi", "Colaba", "Panvel", "Karjat", "Uran", "Pen", "Alibag", "Shrivardhan", "Mahad",
+            "Junnar", "Ambegaon", "Khed Alandi", "Shirur", "Daund", "Indapur", "Baramati", "Purandar", "Bhor", "Maval",
+            "Chinchwad", "Pimpri", "Bhosari", "Vadgaon Sheri", "Shivajinagar", "Kothrud", "Khadakwasala", "Parvati", "Hadapsar",
+            "Pune Cantonment", "Kasba Peth", "Akole", "Sangamner", "Shirdi", "Kopargaon", "Shrirampur", "Nevasa", "Shevgaon",
+            "Rahuri", "Parner", "Ahmednagar City", "Shrigonda", "Karjat Jamkhed", "Georai", "Majalgaon", "Beed", "Ashti", "Kaij",
+            "Parli", "Latur Rural", "Latur City", "Ahmedpur", "Udgir", "Nilanga", "Ausa", "Umarga", "Tuljapur", "Osmanabad",
+            "Paranda", "Karmala", "Madha", "Barshi", "Mohol", "Solapur City North", "Solapur City Central", "Akkalkot",
+            "Solapur South", "Pandharpur", "Sangola", "Malshiras", "Phaltan", "Wai", "Koregaon", "Man", "Karad North",
+            "Karad South", "Patan", "Satara", "Dapoli", "Guhagar", "Chiplun", "Ratnagiri", "Rajapur", "Kankavli", "Kudal",
+            "Sawantwadi", "Chandgad", "Radhanagari", "Kagal", "Karvir", "Kolhapur North", "Kolhapur South", "Shahuwadi",
+            "Hatkanangle", "Ichalkaranji", "Shirol", "Miraj", "Sangli", "Islampur", "Shirala", "Palus-Kadegaon", "Khanapur",
+            "Tasgaon-Kavathe Mahankal", "Jat"
+            ];
+
+        // Populate the "Constituency" select dropdown
+        const constituencySelect = document.getElementById("constituency");
+        constituencies.forEach(constituency => {
+            const option = new Option(constituency, constituency);
+            constituencySelect.add(option);
+        });
+
+        function checkData() {
+            const stateValue = $('#state').val();
+            const constituencyValue = $('#constituency').val();
+            const alertText = `Selected State: ${stateValue} , Selected Constituency: ${constituencyValue}`;
+            $('#resultAlert').html(alertText).slideDown();
+            if (stateValue === "Maharashtra" && constituencyValue === "Aurangabad East") {
+                const iframe = document.createElement('iframe');
+                iframe.src = "https://docs.google.com/spreadsheets/d/11NebcReM02YAA3UdbaK5SmWOoCzdqON0/edit#gid=0";
+                iframe.width = "100%";
+                iframe.height = "500px";
+                iframe.style.border = "1px solid #ccc";
+                iframe.style.marginTop = "20px";
+                iframe.id = "sheetIframe"; // Add ID to the iframe
+
+                const closeBtn = document.createElement('button');
+                closeBtn.textContent = 'Close Sheet';
+                closeBtn.addEventListener('click', function() {
+                    const sheetIframe = document.getElementById('sheetIframe');
+                    if (sheetIframe) {
+                        sheetIframe.parentNode.removeChild(sheetIframe); // Remove the iframe
+                    }
+                    $('#resultAlert').slideUp(); // Slide up the alert
+                });
+
+                document.body.appendChild(iframe);
+                $('#resultAlert').append(closeBtn); // Append close button to resultAlert div
+            }
+        }
+    </script>
 </body>
 </html>
