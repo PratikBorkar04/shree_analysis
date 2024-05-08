@@ -145,6 +145,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script>
+
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+
+        // If not logged in, redirect to the login page
+        if (!isLoggedIn) {
+            window.location.href = "index.html";
+        }
         // Initialize Select2 for both select elements with the "select2" class
         $('.select2').select2();
 

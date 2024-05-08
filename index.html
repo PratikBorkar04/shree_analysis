@@ -91,6 +91,7 @@
             var password = document.getElementById("password").value;
 
             if (username === "shree" && password === "harish") {
+                localStorage.setItem('isLoggedIn', 'true');
                 window.location.href = "home.html";
             } else {
                 alert("Invalid username or password. Please try again.");
