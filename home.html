@@ -143,48 +143,40 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Include Select2 JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script>
         // Initialize Select2 for both select elements with the "select2" class
         $('.select2').select2();
 
-        // Array of constituencies
+        // Array of constituencies for Maharashtra (you can expand this list)
         const constituencies = [
-            "Akkalkuwa", "Shahada", "Nandurbar", "Navapur", "Sakri", "Dhule Rural", "Dhule City", "Sindkheda", "Shirpur",
-            "Chopda", "Raver", "Bhusawal", "Jalgaon City", "Jalgaon Rural", "Amalner", "Erandol", "Chalisgaon",
-            "Pachora", "Jamner", "Muktainagar", "Malkapur", "Buldhana", "Chikhali", "Sindkhed Raja",
-            "Mehkar", "Khamgaon", "Jalgaon (Jamod)", "Akot", "Balapur", "Akola West", "Akola East", "Murtizapur",
-            "Risod", "Washim", "Karanja", "Dhamangaon Railway", "Badnera", "Amravati", "Teosa", "Daryapur", "Melghat",
-            "Achalpur", "Morshi", "Arvi", "Deoli", "Hinganghat", "Wardha", "Katol", "Savner", "Hingna", "Umred",
-            "Nagpur South West", "Nagpur South", "Nagpur East", "Nagpur Central", "Nagpur West", "Nagpur North",
-            "Kamthi", "Ramtek", "Tumsar", "Bhandara", "Sakoli", "Arjuni-Morgaon", "Tirora", "Gondiya", "Amgaon",
-            "Armori", "Gadchiroli", "Aheri", "Rajura", "Chandrapur", "Ballarpur", "Bramhapuri", "Chimur", "Warora",
-            "Wani", "Ralegaon", "Yavatmal", "Digras", "Arni", "Pusad", "Umarkhed", "Kinwat", "Hadgaon", "Bhokar",
-            "Nanded North", "Nanded South", "Loha", "Naigaon", "Deglur", "Mukhed", "Basmath", "Kalamnuri", "Jintur",
-            "Parbhani", "Gangakhed", "Pathri", "Partur", "Ghansawangi", "Jalna", "Badnapur", "Bhokardan", "Sillod",
-            "Kannad", "Phulambri", "Aurangabad Central", "Aurangabad West", "Aurangabad East", "Paithan", "Gangapur",
-            "Vaijapur", "Nandgaon", "Malegaon Central", "Malegaon Outer", "Baglan", "Kalwan", "Chandwad", "Yevla",
-            "Sinnar", "Niphad", "Dindori", "Nashik East", "Nashik Central", "Nashik West", "Deolali", "Igatpuri",
-            "Dahanu", "Vikramgad", "Palghar", "Boisar", "Nalasopara", "Vasai", "Bhiwandi Rural", "Shahapur", "Bhiwandi West",
-            "Bhiwandi East", "Kalyan West", "Murbad", "Ambernath", "Ulhasnagar", "Kalyan East", "Dombivali", "Kalyan Rural",
-            "Mira Bhayandar", "Ovala-Majiwada", "Kopri-Pachpakhadi", "Thane", "Mumbra-Kalwa", "Airoli", "Belapur", "Borivali",
-            "Dahisar", "Magathane", "Mulund", "Vikhroli", "Bhandup West", "Jogeshwari East", "Dindoshi", "Kandivali East",
-            "Charkop", "Malad West", "Goregaon", "Versova", "Andheri West", "Andheri East", "Vile Parle", "Chandivali",
-            "Ghatkopar West", "Ghatkopar East", "Mankhurd Shivaji Nagar", "Anushakti Nagar", "Chembur", "Kurla", "Kalina",
-            "Vandre East", "Vandre West", "Dharavi", "Sion Koliwada", "Wadala", "Mahim", "Worli", "Shivadi", "Byculla",
-            "Malabar Hill", "Mumbadevi", "Colaba", "Panvel", "Karjat", "Uran", "Pen", "Alibag", "Shrivardhan", "Mahad",
-            "Junnar", "Ambegaon", "Khed Alandi", "Shirur", "Daund", "Indapur", "Baramati", "Purandar", "Bhor", "Maval",
-            "Chinchwad", "Pimpri", "Bhosari", "Vadgaon Sheri", "Shivajinagar", "Kothrud", "Khadakwasala", "Parvati", "Hadapsar",
-            "Pune Cantonment", "Kasba Peth", "Akole", "Sangamner", "Shirdi", "Kopargaon", "Shrirampur", "Nevasa", "Shevgaon",
-            "Rahuri", "Parner", "Ahmednagar City", "Shrigonda", "Karjat Jamkhed", "Georai", "Majalgaon", "Beed", "Ashti", "Kaij",
-            "Parli", "Latur Rural", "Latur City", "Ahmedpur", "Udgir", "Nilanga", "Ausa", "Umarga", "Tuljapur", "Osmanabad",
-            "Paranda", "Karmala", "Madha", "Barshi", "Mohol", "Solapur City North", "Solapur City Central", "Akkalkot",
-            "Solapur South", "Pandharpur", "Sangola", "Malshiras", "Phaltan", "Wai", "Koregaon", "Man", "Karad North",
-            "Karad South", "Patan", "Satara", "Dapoli", "Guhagar", "Chiplun", "Ratnagiri", "Rajapur", "Kankavli", "Kudal",
-            "Sawantwadi", "Chandgad", "Radhanagari", "Kagal", "Karvir", "Kolhapur North", "Kolhapur South", "Shahuwadi",
-            "Hatkanangle", "Ichalkaranji", "Shirol", "Miraj", "Sangli", "Islampur", "Shirala", "Palus-Kadegaon", "Khanapur",
-            "Tasgaon-Kavathe Mahankal", "Jat"
-        ];
-
+             "Akkalkuwa","Achalpur", "Aheri", "Ahmednagar City", "Ahmedpur", "Airoli", "Akole", "Akot", "Alibag", "Amalner", "Ambegaon",
+            "Ambernath", "Amgaon", "Amravati", "Andheri East", "Andheri West", "Anushakti Nagar", "Arjuni-Morgaon", "Arni",
+            "Ashti", "Aurangabad Central", "Aurangabad East", "Aurangabad West", "Ausa", "Badnapur", "Badnera", "Baglan",
+            "Balapur", "Ballarpur", "Baramati", "Beed", "Belapur", "Bhandara", "Bhandup West", "Bhiwandi East", "Bhiwandi Rural",
+            "Bhiwandi West", "Bhor", "Bhusawal", "Bhokardan", "Bhokar", "Bhosari", "Boisar", "Borivali", "Bramhapuri", "Chalisgaon",
+            "Chandgad", "Chandrapur", "Chandwad", "Charkop", "Chembur", "Chikhali", "Chimur", "Chinchwad", "Chiplun", "Chopda",
+            "Colaba", "Dahanu", "Dapoli", "Daryapur", "Daund", "Deglur", "Deoli", "Deolali", "Dharavi", "Dhule City", "Dhule Rural",
+            "Dindori", "Dindoshi", "Dombivali", "Dombivali East", "Gadchiroli", "Gangakhed", "Gangapur", "Ghatkopar East",
+            "Ghatkopar West", "Ghansawangi", "Gondiya", "Goregaon", "Georai", "Hadapsar", "Hadgaon", "Hinganghat", "Hingna",
+            "Ichalkaranji", "Igatpuri", "Indapur", "Jalgaon City", "Jalgaon Jamod", "Jalgaon Rural", "Jalna", "Jamner", "Jat",
+            "Jintur", "Jogeshwari East", "Junner", "Kadegaon", "Kaij", "Kalamb", "Kalina", "Kalwan", "Kalyan East", "Kalyan Rural",
+            "Kalyan West", "Kamthi", "Kandivali East", "Kankavli", "Karad North", "Karad South", "Karanja", "Karjat", "Karjat jamkhed",
+            "Kasba Peth", "Khadakwasala", "Khamgaon", "Khed Alandi", "Kherwadi", "Khopoli", "Kinwat", "Kodoli", "Kolhapur North",
+            "Kolhapur South", "Kopargaon", "Kopri-Pachpakhadi", "Koregaon", "Kot", "Kothrud", "Kudal", "Kurla", "Latur City", "Latur Rural",
+            "Majalgaon", "Makurdi", "Malkapur","Malegaon central","Malad West", "Malbar Hill","Malegaon outer", "Malshiras", "Mankhurd shivaji Nagar", "Man", "Maval",
+            "Mehkar", "Melghat", "Miraj", "Mira Bhayandar", "Mohol", "Mulund", "Mumbadevi", "Mumbai Central", "Murbad","Mumbra-Kalwa", "Nagpur Central",
+            "Nagpur East", "Nagpur North", "Nagpur South", "Nagpur South West", "Nagpur West", "Nalasopara", "Nandgaon", "Nandurbar",
+            "Nashik central", "Nashik East", "Nashik West", "Navi Mumbai", "Navapur", "Neral", "Nevasa", "Nilanga", "Ovala-Majiwada",
+            "Osmanabad", "Pachora", "Palandur", "Palghar", "Pandharpur", "Panvel", "Paranda", "Parbhani", "Parli", "Parner", "Partur",
+            "Pathri", "Patan", "Pune Cantonment", "Purandar", "Pusad", "Rahuri", "Raigad", "Rajapur", "Rajura", "Ramtek", "Ratnagiri",
+            "Raver", "Risod", "Sakoli", "Sakri", "Sangamner", "Sangli", "Sangola", "Satara", "Savner", "Sawantwadi", "Savli",
+            "Shahada", "Shahapur", "Shahuwadi", "shahupur", "Shirala", "Shirur", "Shirpur", "Shivadi", "Shivajinagar", "Shrirampur",
+            "Siddipet", "Sillod", "Sinnar", "Solapur City central", "Solapur City North", "Solapur South", "Srigonda", "Srinivasa Nagar",
+            "Srinivasanagar", "Tasgaon-Kavathe Mahankal", "Teosa", "Thane", "Tirora", "Tuljapur", "Tumsar", "Udgir", "Umarkhed",
+            "Umarga", "Umred", "Uran", "Vaijapur", "Vandre East", "Vandre West", "Vasai", "Vashi", "Vikhroli", "Vile parle",
+            "Vikhroli", "Vikramgad", "Wadala", "Wai", "Wani", "Wardha", "Warora", "Washim", "Yavatmal"
+            ];
         // Populate the "Constituency" select dropdown
         const constituencySelect = document.getElementById("constituency");
         constituencies.forEach(constituency => {
@@ -198,52 +190,70 @@
             const alertText = `Selected State: ${stateValue}, Selected Constituency: ${constituencyValue}`;
             $('#resultAlert').html(alertText).slideDown();
 
-            if (stateValue === "Maharashtra" && constituencyValue === "Aurangabad East") {
-    fetch("dataset/Aurangabad-_East_.txt")
-        .then(response => response.text())
-        .then(data => {
-            const rows = data.trim().split('\n');
-            const table = document.createElement('table');
-            table.style.borderCollapse = 'collapse';
-            table.style.width = '100%';  // Adjusted width
+            if (stateValue === "Maharashtra") {
+                fetch("dataset/maharashtra_data.csv")
+                    .then(response => response.text())
+                    .then(csvData => {
+                        // Parse CSV data using PapaParse
+                        Papa.parse(csvData, {
+                            header: true,
+                            complete: function (parsedData) {
+                                // Filter data based on constituency
+                                const filteredData = parsedData.data.filter(row => row['Constituencies'] === constituencyValue);
 
-            rows.forEach((rowData, rowIndex) => {
-                const columns = rowData.split(',');
-                const row = document.createElement('tr');
+                                // Create a table with the filtered data
+                                const table = document.createElement('table');
+                                table.style.borderCollapse = 'collapse';
+                                table.style.width = '100%';
 
-                columns.forEach((columnData, colIndex) => {
-                    const cell = document.createElement('td');
-                    cell.textContent = columnData;
-                    cell.style.border = '1px solid #ccc';
-                    cell.style.padding = '8px';
-                    row.appendChild(cell);
-                });
+                                // Add table headers
+                                const headers = Object.keys(filteredData[0]);
+                                const headerRow = document.createElement('tr');
+                                headers.forEach(header => {
+                                    const th = document.createElement('th');
+                                    th.textContent = header;
+                                    th.style.border = '1px solid #ccc';
+                                    th.style.padding = '8px';
+                                    headerRow.appendChild(th);
+                                });
+                                table.appendChild(headerRow);
 
-                table.appendChild(row);
-            });
+                                // Add table rows with filtered data
+                                filteredData.forEach(rowData => {
+                                    const row = document.createElement('tr');
+                                    headers.forEach(header => {
+                                        const cell = document.createElement('td');
+                                        cell.textContent = rowData[header];
+                                        cell.style.border = '1px solid #ccc';
+                                        cell.style.padding = '8px';
+                                        row.appendChild(cell);
+                                    });
+                                    table.appendChild(row);
+                                });
 
-            const textFileContainer = document.getElementById('textFileContainer');
-            textFileContainer.innerHTML = ''; // Clear existing content
-            textFileContainer.appendChild(table);
+                                const textFileContainer = document.getElementById('textFileContainer');
+                                textFileContainer.innerHTML = ''; // Clear existing content
+                                textFileContainer.appendChild(table);
 
-            // Add close button to remove the table
-            const closeBtn = document.createElement('button');
-            closeBtn.textContent = 'Close Table';
-            closeBtn.className = 'closeBtn';
-            closeBtn.style.display = 'block'; // Display the button as block element
-            closeBtn.style.margin = '0 auto'; // Center the button horizontally
-            closeBtn.addEventListener('click', function () {
-                textFileContainer.innerHTML = ''; // Remove the table
-                closeBtn.remove(); // Remove the close button
-                $('#resultAlert').slideUp(); // Slide up the alert
-            });
-            textFileContainer.appendChild(closeBtn);
-        });
-} else {
-    const textFileContainer = document.getElementById('textFileContainer');
-    textFileContainer.innerHTML = ''; // Clear existing content
-}
-
+                                // Add close button to remove the table
+                                const closeBtn = document.createElement('button');
+                                closeBtn.textContent = 'Close Table';
+                                closeBtn.className = 'closeBtn';
+                                closeBtn.style.display = 'block';
+                                closeBtn.style.margin = '0 auto';
+                                closeBtn.addEventListener('click', function () {
+                                    textFileContainer.innerHTML = ''; // Remove the table
+                                    closeBtn.remove(); // Remove the close button
+                                    $('#resultAlert').slideUp(); // Slide up the alert
+                                });
+                                textFileContainer.appendChild(closeBtn);
+                            }
+                        });
+                    });
+            } else {
+                const textFileContainer = document.getElementById('textFileContainer');
+                textFileContainer.innerHTML = ''; // Clear existing content
+            }
         }
     </script>
 </body>
