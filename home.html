@@ -7,6 +7,7 @@
     <!-- Include Select2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <style>
+        /* CSS styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f7fa;
@@ -29,38 +30,48 @@
             padding: 20px;
             background-color: #fff;
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: flex-start;
+            margin-bottom: 20px;
         }
 
         h1 {
             margin-bottom: 20px;
         }
 
+        .trend-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin: 0;
+        }
+
+        .dropdown-container {
+            margin-right: 20px;
+        }
+
         label {
             font-weight: bold;
-            margin-bottom: 8px;
-            display: block;
+            margin-right: 10px;
+            display: inline-block;
         }
 
         select {
-            width: 100%;
+            width: 200px;
             padding: 8px;
-            margin-bottom: 20px;
             border-radius: 5px;
+            margin-right: 10px;
         }
 
         button {
             background-color: #3b8aa1;
             color: #fff;
             border: none;
-            padding: 6px 50px;
+            padding: 12px 30px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             border-radius: 5px;
-            margin-top: 24px;
         }
 
         button:hover {
@@ -108,56 +119,74 @@
         .closeBtn:hover {
             background-color: #b71c1c;
         }
+
         .container {
             position: relative;
-        }
-
-        .dropdown-container {
-            display: inline-block;
-            margin-right: 10px;
         }
 
         #logoutBtn {
             background-color: red;
             color: white;
             border: none;
-            padding: 10px 20px; /* Increase padding for a bigger button */
+            padding: 10px 20px;
             cursor: pointer;
-            border-radius: 8px; /* Increase border-radius for a rounded button */
-            font-size: 18px; /* Increase font size for bigger text */
+            border-radius: 8px;
+            font-size: 18px;
             float: right;
-            margin-top: 50px;
-            margin-right: 20px;
+            margin-top: 20px;
         }
-
     </style>
 </head>
 <body>
     <header>
         <h1>State and Constituency Analysis</h1>
-        <button id="logoutBtn" style="background-color: red; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 5px;">Logout</button>
+        <button id="logoutBtn">Logout</button>
     </header>
 
     <div class="container">
-        <div>
-            <label for="state">State:</label>
-            <select id="state" class="select2" style="width: 250px;">
-                <option value="Maharashtra">Maharashtra</option>
-                <option value="Karnataka">Karnataka</option>
-                <!-- Add more states here if needed -->
-            </select>
+        <div class="trend-container">
+            <h2>Loksabha Trend</h2>
+            <div class="dropdown-container">
+                <label for="state">State:</label>
+                <select id="state" class="select2">
+                    <option value="Maharashtra">Maharashtra</option>
+                    <option value="Karnataka">Karnataka</option>
+                    <!-- Add more states here if needed -->
+                </select>
+            </div>
+            <div class="dropdown-container">
+                <label for="constituency">Constituency:</label>
+                <select id="constituency" class="select2">
+                    <!-- JavaScript will populate this dropdown -->
+                </select>
+            </div>
+            <button onclick="checkData()">Check</button>
         </div>
-
-        <div>
-            <label for="constituency">Constituency:</label>
-            <select id="constituency" class="select2" style="width: 250px;">
-                <!-- JavaScript will populate this dropdown -->
-            </select>
-        </div>
-        
-        <button onclick="checkData()">Check</button>
 
         <div class="alert" id="resultAlert"></div>
+    </div>
+
+    <div class="container">
+        <div class="trend-container">
+            <h2>Boothwise Trend</h2>
+            <div class="dropdown-container">
+                <label for="constituencyBooth">Constituency:</label>
+                <select id="constituencyBooth" class="select2">
+                    <!-- JavaScript will populate this dropdown -->
+                </select>
+            </div>
+            <div class="dropdown-container">
+                <label for="Parliament">Parliament:</label>
+                <select id="Parliament" class="select2">
+                    <option value="Vidhansabha-2019">Vidhansabha-2019</option>
+                    <option value="Loksabha-2019">Loksabha-2019</option>
+                    <!-- Add more booths here if needed -->
+                </select>
+            </div>
+            <button onclick="checkBoothData()">Check</button>
+        </div>
+
+        <div class="alert" id="boothResultAlert"></div>
     </div>
 
     <div id="textFileContainer"></div>
@@ -168,6 +197,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script>
+        // Your JavaScript code for handling functionality goes here
 
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
@@ -175,60 +205,62 @@
         if (!isLoggedIn) {
             window.location.href = "index.html";
         }
+
         // Initialize Select2 for both select elements with the "select2" class
         $('.select2').select2();
 
         // Array of constituencies for Maharashtra (you can expand this list)
         const constituencies = [
-        "Achalpur", "Aheri", "Ahmadpur", "Ahmednagar City", "Airoli", "Akkalkot", "Akkalkuwa", "Akola East", "Akola West", "Akole", "Akot",
-        "Alibag", "Amalner", "Ambegaon", "Ambernath", "Amgaon", "Amravati", "Andheri East", "Andheri West", "Anushakti Nagar", "Arjuni-morgaon",
-        "Armori", "Arni", "Arvi", "Ashti", "Aurangabad central", "Aurangabad East", "Aurangabad West", "Ausa", "Badnapur", "Badnera", "Baglan",
-        "Balapur", "Ballarpur", "Baramati", "Barshi", "Basmath", "Beed", "Belapur", "Bhandara", "Bhandup West", "Bhiwandi East", "Bhiwandi Rural ",
-        "Bhiwandi West", "Bhokar", "Bhokardan", "Bhor", "Bhosari", "Bhusawal", "Boisar", "Borivali", "Brahmapuri", "Buldhana", "Byculla", "Chalisgaon",
-        "Chandgad", "Chandivali", "Chandrapur", "Chandvad", "Charkop", "Chembur", "Chikhli", "Chimur", "Chinchwad", "Chiplun", "Chopda", "Colaba", "Dahanu",
-        "Dahisar", "Dapoli", "Daryapur", "Daund", "Deglur", "Deoli", "Devlali", "Dhamamgaon railway", "Dharavi", "Dhule City", "Dhule Rural", "Digras",
-        "Dindori", "Dindoshi", "Dombivali", "Erandol", "Gadchiroli", "Gangakhed", "Gangapur", "Georai", "Ghansawangi", "Ghatkopar East", "Ghatkopar West",
-        "Gondiya", "Goregaon", "Guhagar", "Hadapsar", "Hadgaon", "Hatkanangle", "Hinganghat", "Hingna", "Hingoli", "Ichalkaranji", "Igatpuri", "Indapur",
-        "Islampur", "Jalgaon Jamod", "Jalgaon City", "Jalgaon Rural", "Jalna", "Jamner", "Jath", "Jintur", "Jogeshwari East", "Junnar", "Kagal", "Kaij",
-        "Kalamnuri", "Kalina", "Kalwan", "Kalyan East", "Kalyan Rural", "Kalyan West", "Kamthi", "Kandivali East", "Kankavli", "Kannad", "Karad North",
-        "Karad South", "Karanja", "Karjat", "Karjat jamkhed", "Karmala", "Karvir", "Kasbapeth", "Katol", "Khadakwasala", "Khamgaon", "Khanapur",
-        "Khed alandi", "Kinwat", "Kolhapur North", "Kolhapur South", "Kopargaon", "Kopri-Pachpakhadi", "Koregaon", "Kothrud", "Kudal", "Kurla",
-        "Latur City", "Latur Rural", "Loha", "Madha", "Magathane", "Mahad", "Mahim", "Majalgaon", "Malabar hill", "Malad West", "Malegaon central",
-        "Malegaon outer", "Malkapur", "Malshiras", "Man", "Mankhurd shivaji Nagar", "Maval", "Mehkar", "Melghat", "Mira Bhayandar", "Miraj", "Mohol",
-        "Morshi", "Mukhed", "Muktainagar", "Mulund", "Mumbadevi", "Mumbra-Kalwa", "Murbad", "Murtizapur", "Nagpur central", "Nagpur East", "Nagpur North",
-        "Nagpur South", "Nagpur South West", "Nagpur West", "Naigaon", "Nalasopara", "Nanded North", "Nanded South", "Nandgaon", "Nandurbar", "Nashik central",
-        "Nashik East", "Nashik West", "Nawapur", "Nevasa", "Nilanga", "Niphad", "Osmanabad", "Ovala - Majiwada", "Pachora", "Paithan", "Palghar", "Palus-Kadegaon",
-        "Pandharpur", "Panvel", "Paranda", "Parbhani", "Parli", "Parner", "Partur", "Parvati", "Patan", "Pathri", "Pen", "Phaltan", "Phulambri", "Pimpri",
-        "Pune cantonment", "Purandar", "Pusad", "Radhanagari", "Rahuri", "Rajapur", "Rajura", "Ralegaon", "Ramtek", "Ratnagiri", "Raver", "Risod", "Sakoli",
-        "Sakri", "Sangamner", "Sangli", "Sangola", "Satara", "Savner", "Sawantwadi", "Shahada", "shahapur", "Shahuwadi", "Shevgaon", "Shindkheda", "Shirala",
-        "Shirdi", "Shirol", "Shirpur", "Shirur", "Shivadi", "Shivajinagar", "Shrigonda", "Shrirampur", "Shrivardhan", "Sillod", "Sindkhed Raja", "Sinnar",
-        "Sion koliwada", "Solapur City central", "Solapur City North", "Solapur South", "Tasgaon-Kavathe Mahankal", "Teosa", "Thane", "Tirora", "Tuljapur",
-        "Tumsar", "Udgir", "Ulhasnagar", "Umarga", "Umarkhed", "Umred", "Uran", "VADGAON SHERI", "Vaijapur", "Vandre East", "Vandre West", "Vasai", "Versova",
-        "Vikhroli", "Vikramgad", "Vile parle", "Wadala", "Wai", "Wani", "Wardha", "Warora", "Washim", "Worli", "Yavatmal", "Yevla"
+            "Achalpur", "Aheri", "Ahmadpur", "Ahmednagar City", "Airoli", "Akkalkot", "Akkalkuwa", "Akola East", "Akola West", "Akole", "Akot",
+            "Alibag", "Amalner", "Ambegaon", "Ambernath", "Amgaon", "Amravati", "Andheri East", "Andheri West", "Anushakti Nagar", "Arjuni-morgaon",
+            "Armori", "Arni", "Arvi", "Ashti", "Aurangabad central", "Aurangabad East", "Aurangabad West", "Ausa", "Badnapur", "Badnera", "Baglan",
+            "Balapur", "Ballarpur", "Baramati", "Barshi", "Basmath", "Beed", "Belapur", "Bhandara", "Bhandup West", "Bhiwandi East", "Bhiwandi Rural ",
+            "Bhiwandi West", "Bhokar", "Bhokardan", "Bhor", "Bhosari", "Bhusawal", "Boisar", "Borivali", "Brahmapuri", "Buldhana", "Byculla", "Chalisgaon",
+            "Chandgad", "Chandivali", "Chandrapur", "Chandvad", "Charkop", "Chembur", "Chikhli", "Chimur", "Chinchwad", "Chiplun", "Chopda", "Colaba", "Dahanu",
+            "Dahisar", "Dapoli", "Daryapur", "Daund", "Deglur", "Deoli", "Devlali", "Dhamamgaon railway", "Dharavi", "Dhule City", "Dhule Rural", "Digras",
+            "Dindori", "Dindoshi", "Dombivali", "Erandol", "Gadchiroli", "Gangakhed", "Gangapur", "Georai", "Ghansawangi", "Ghatkopar East", "Ghatkopar West",
+            "Gondiya", "Goregaon", "Guhagar", "Hadapsar", "Hadgaon", "Hatkanangle", "Hinganghat", "Hingna", "Hingoli", "Ichalkaranji", "Igatpuri", "Indapur",
+            "Islampur", "Jalgaon Jamod", "Jalgaon City", "Jalgaon Rural", "Jalna", "Jamner", "Jath", "Jintur", "Jogeshwari East", "Junnar", "Kagal", "Kaij",
+            "Kalamnuri", "Kalina", "Kalwan", "Kalyan East", "Kalyan Rural", "Kalyan West", "Kamthi", "Kandivali East", "Kankavli", "Kannad", "Karad North",
+            "Karad South", "Karanja", "Karjat", "Karjat jamkhed", "Karmala", "Karvir", "Kasbapeth", "Katol", "Khadakwasala", "Khamgaon", "Khanapur",
+            "Khed alandi", "Kinwat", "Kolhapur North", "Kolhapur South", "Kopargaon", "Kopri-Pachpakhadi", "Koregaon", "Kothrud", "Kudal", "Kurla",
+            "Latur City", "Latur Rural", "Loha", "Madha", "Magathane", "Mahad", "Mahim", "Majalgaon", "Malabar hill", "Malad West", "Malegaon central",
+            "Malegaon outer", "Malkapur", "Malshiras", "Man", "Mankhurd shivaji Nagar", "Maval", "Mehkar", "Melghat", "Mira Bhayandar", "Miraj", "Mohol",
+            "Morshi", "Mukhed", "Muktainagar", "Mulund", "Mumbadevi", "Mumbra-Kalwa", "Murbad", "Murtizapur", "Nagpur central", "Nagpur East", "Nagpur North",
+            "Nagpur South", "Nagpur South West", "Nagpur West", "Naigaon", "Nalasopara", "Nanded North", "Nanded South", "Nandgaon", "Nandurbar", "Nashik central",
+            "Nashik East", "Nashik West", "Nawapur", "Nevasa", "Nilanga", "Niphad", "Osmanabad", "Ovala - Majiwada", "Pachora", "Paithan", "Palghar", "Palus-Kadegaon",
+            "Pandharpur", "Panvel", "Paranda", "Parbhani", "Parli", "Parner", "Partur", "Parvati", "Patan", "Pathri", "Pen", "Phaltan", "Phulambri", "Pimpri",
+            "Pune cantonment", "Purandar", "Pusad", "Radhanagari", "Rahuri", "Rajapur", "Rajura", "Ralegaon", "Ramtek", "Ratnagiri", "Raver", "Risod", "Sakoli",
+            "Sakri", "Sangamner", "Sangli", "Sangola", "Satara", "Savner", "Sawantwadi", "Shahada", "shahapur", "Shahuwadi", "Shevgaon", "Shindkheda", "Shirala",
+            "Shirdi", "Shirol", "Shirpur", "Shirur", "Shivadi", "Shivajinagar", "Shrigonda", "Shrirampur", "Shrivardhan", "Sillod", "Sindkhed Raja", "Sinnar",
+            "Sion koliwada", "Solapur City central", "Solapur City North", "Solapur South", "Tasgaon-Kavathe Mahankal", "Teosa", "Thane", "Tirora", "Tuljapur",
+            "Tumsar", "Udgir", "Ulhasnagar", "Umarga", "Umarkhed", "Umred", "Uran", "VADGAON SHERI", "Vaijapur", "Vandre East", "Vandre West", "Vasai", "Versova",
+            "Vikhroli", "Vikramgad", "Vile parle", "Wadala", "Wai", "Wani", "Wardha", "Warora", "Washim", "Worli", "Yavatmal", "Yevla"
         ];
-        // Populate the "Constituency" select dropdown
+
+        // Populate the "Constituency" select dropdown for both sections
         const constituencySelect = document.getElementById("constituency");
+        const constituencyBoothSelect = document.getElementById("constituencyBooth");
+        const boothValueSelect = document.getElementById("Parliament");
+
         constituencies.forEach(constituency => {
             const option = new Option(constituency, constituency);
             constituencySelect.add(option);
+            constituencyBoothSelect.add(option.cloneNode(true)); // Clone options for Boothwise Trend
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const logoutBtn = document.getElementById('logoutBtn');
-
-            logoutBtn.addEventListener('click', function () {
-                localStorage.removeItem('isLoggedIn');
-                window.location.href = "index.html"; // Redirect to the login page after logout
-            });
-        });
-
+        // Function to handle checking data for Loksabha Trend
         function checkData() {
             const stateValue = $('#state').val();
             const constituencyValue = $('#constituency').val();
             const alertText = `Selected State: ${stateValue}, Selected Constituency: ${constituencyValue}`;
             $('#resultAlert').html(alertText).slideDown();
 
+            // Update the Constituency dropdown in Boothwise Trend section
+            $('#constituencyBooth').val(constituencyValue).trigger('change.select2');
+
             if (stateValue === "Maharashtra") {
+                // Fetch and parse CSV data for Maharashtra
                 fetch("dataset/maharashtra_data.csv")
                     .then(response => response.text())
                     .then(csvData => {
@@ -240,51 +272,10 @@
                                 const filteredData = parsedData.data.filter(row => row['Constituencies'] === constituencyValue);
 
                                 // Create a table with the filtered data
-                                const table = document.createElement('table');
-                                table.style.borderCollapse = 'collapse';
-                                table.style.width = '100%';
+                                const table = createTable(filteredData);
 
-                                // Add table headers
-                                const headers = Object.keys(filteredData[0]);
-                                const headerRow = document.createElement('tr');
-                                headers.forEach(header => {
-                                    const th = document.createElement('th');
-                                    th.textContent = header;
-                                    th.style.border = '1px solid #ccc';
-                                    th.style.padding = '8px';
-                                    headerRow.appendChild(th);
-                                });
-                                table.appendChild(headerRow);
-
-                                // Add table rows with filtered data
-                                filteredData.forEach(rowData => {
-                                    const row = document.createElement('tr');
-                                    headers.forEach(header => {
-                                        const cell = document.createElement('td');
-                                        cell.textContent = rowData[header];
-                                        cell.style.border = '1px solid #ccc';
-                                        cell.style.padding = '8px';
-                                        row.appendChild(cell);
-                                    });
-                                    table.appendChild(row);
-                                });
-
-                                const textFileContainer = document.getElementById('textFileContainer');
-                                textFileContainer.innerHTML = ''; // Clear existing content
-                                textFileContainer.appendChild(table);
-
-                                // Add close button to remove the table
-                                const closeBtn = document.createElement('button');
-                                closeBtn.textContent = 'Close Table';
-                                closeBtn.className = 'closeBtn';
-                                closeBtn.style.display = 'block';
-                                closeBtn.style.margin = '0 auto';
-                                closeBtn.addEventListener('click', function () {
-                                    textFileContainer.innerHTML = ''; // Remove the table
-                                    closeBtn.remove(); // Remove the close button
-                                    $('#resultAlert').slideUp(); // Slide up the alert
-                                });
-                                textFileContainer.appendChild(closeBtn);
+                                // Display the table in textFileContainer
+                                displayTable(table);
                             }
                         });
                     });
@@ -293,6 +284,126 @@
                 textFileContainer.innerHTML = ''; // Clear existing content
             }
         }
+
+        // Function to handle checking data for Boothwise Trend
+        function checkBoothData() {
+            const constituencyValue = $('#constituencyBooth').val();
+            const boothValue = $('#Parliament').val();
+            const alertText = `Selected Constituency: ${constituencyValue}, Selected Booth: ${boothValue}`;
+            $('#boothResultAlert').html(alertText).slideDown();
+
+            if (constituencyValue === "Bhokar" && boothValue === "Loksabha-2019") {
+                // Open the CSV file for Bhokar Boothwise Result
+                fetch("dataset/Lok Sabha 2019 - Bhokar Boothwise Result.csv")
+                    .then(response => response.text())
+                    .then(csvData => {
+                        // Parse CSV data using PapaParse
+                        Papa.parse(csvData, {
+                            header: true,
+                            complete: function (parsedData) {
+                                // Create a table with the parsed data
+                                const table = createTable(parsedData.data);
+
+                                // Display the table in textFileContainer
+                                displayTable(table);
+                            }
+                        });
+                    });
+            } 
+            if (constituencyValue === "Bhokar" && boothValue === "Vidhansabha-2019") {
+                // Open the CSV file for Bhokar Boothwise Result
+                fetch("dataset/Vidhan Sabha 2019 - Bhokar Boothwise Result.csv")
+                    .then(response => response.text())
+                    .then(csvData => {
+                        // Parse CSV data using PapaParse
+                        Papa.parse(csvData, {
+                            header: true,
+                            complete: function (parsedData) {
+                                // Create a table with the parsed data
+                                const table = createTable(parsedData.data);
+
+                                // Display the table in textFileContainer
+                                displayTable(table);
+                            }
+                        });
+                    });
+            } 
+            else {
+                const textFileContainer = document.getElementById('textFileContainer');
+                textFileContainer.innerHTML = ''; // Clear existing content
+            }
+        }
+
+        // Create a table from the given data array
+        function createTable(dataArray) {
+            const table = document.createElement('table');
+            table.style.borderCollapse = 'collapse';
+            table.style.width = '100%';
+
+            // Add table headers
+            const headers = Object.keys(dataArray[0]);
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                th.style.border = '1px solid #ccc';
+                th.style.padding = '8px';
+                headerRow.appendChild(th);
+            });
+            table.appendChild(headerRow);
+
+            // Add table rows with data
+            dataArray.forEach(rowData => {
+                const row = document.createElement('tr');
+                headers.forEach(header => {
+                    const cell = document.createElement('td');
+                    cell.textContent = rowData[header];
+                    cell.style.border = '1px solid #ccc';
+                    cell.style.padding = '8px';
+                    row.appendChild(cell);
+                });
+                table.appendChild(row);
+            });
+
+            return table;
+        }
+
+        // Display the given table in textFileContainer
+        function displayTable(table) {
+            const textFileContainer = document.getElementById('textFileContainer');
+            textFileContainer.innerHTML = ''; // Clear existing content
+            textFileContainer.appendChild(table);
+
+            // Add close button to remove the table
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = 'Close Table';
+            closeBtn.className = 'closeBtn';
+            closeBtn.style.display = 'block';
+            closeBtn.style.margin = '0 auto';
+            closeBtn.addEventListener('click', function () {
+                textFileContainer.innerHTML = ''; // Remove the table
+                closeBtn.remove(); // Remove the close button
+                $('#resultAlert').slideUp(); // Slide up the alert
+                $('#boothResultAlert').slideUp(); // Slide up the booth alert
+            });
+            textFileContainer.appendChild(closeBtn);
+        }
+
+        // Event listener for logout button
+        document.addEventListener('DOMContentLoaded', function () {
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            logoutBtn.addEventListener('click', function () {
+                localStorage.removeItem('isLoggedIn');
+                window.location.href = "index.html"; // Redirect to the login page after logout
+            });
+
+            // Event listener to synchronize Constituency dropdowns between Loksabha Trend and Boothwise Trend
+            $('#constituency').on('change', function () {
+                $('#constituencyBooth').val($(this).val()).trigger('change.select2');
+            });
+        });
+
     </script>
 </body>
 </html>
