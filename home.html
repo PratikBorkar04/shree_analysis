@@ -241,7 +241,29 @@ button:hover {
 
         <div class="alert" id="boothResultAlert"></div>
     </div>
-
+    <div class="container">
+        <div class="trend-container">
+            <h2>Political Zones</h2>
+            <div class="dropdown-container">
+                <label for="politicianName">Politician Name:</label>
+                <select id="politicianName" class="select2">
+                    <option value="Ashok Chavan">Ashok Chavan</option>
+                    <option value="Prataprao Patil">Prataprao Patil</option>
+                    <!-- Add more politicians here if needed -->
+                </select>
+            </div>
+            <div class="dropdown-container">
+                <label for="constituencyPolitician">Constituency:</label>
+                <select id="constituencyPolitician" class="select2">
+                    <!-- Populate options dynamically based on selected politician -->
+                </select>
+            </div>
+            <button onclick="checkPoliticalZone()">Check</button>
+        </div>
+    
+        <div class="alert" id="politicalZoneResultAlert"></div>
+    </div>
+    
     <div id="textFileContainer"></div>
 
     <!-- Include jQuery (required by Select2) -->
@@ -420,6 +442,51 @@ button:hover {
 
             return table;
         }
+
+        $('.select2').select2();
+
+        // dropdown for the Political Zones section
+        const constituencyPoliticianSelect = document.getElementById("constituencyPolitician");
+        constituencies.forEach(constituency => {
+            const option = new Option(constituency, constituency);
+            constituencyPoliticianSelect.add(option);
+        });
+        
+        function checkPoliticalZone() {
+        const politicianValue = $('#politicianName').val();
+        const constituencyValue = $('#constituencyPolitician').val();
+        const alertText = `Selected Politician: ${politicianValue}, Selected Constituency: ${constituencyValue}`;
+        $('#politicalZoneResultAlert').html(alertText).slideDown();
+
+        // Additional logic for handling data based on selected politician and constituency can be added here
+
+        const textFileContainer = document.getElementById('textFileContainer');
+        textFileContainer.innerHTML = ''; // Clear existing content
+        if (constituencyValue === "Bhokar" && politicianValue === "Ashok Chavan") {
+                // Open the CSV file for Bhokar Boothwise Result
+                fetch("dataset/Ashok_Chavan_Loksabha.csv")
+                    .then(response => response.text())
+                    .then(csvData => {
+                        // Parse CSV data using PapaParse
+                        Papa.parse(csvData, {
+                            header: true,
+                            complete: function (parsedData) {
+                                // Create a table with the parsed data
+                                const table = createTable(parsedData.data);
+
+                                // Display the table in textFileContainer
+                                displayTable(table);
+                            }
+                        });
+                    });
+            } 
+            else {
+                const textFileContainer = document.getElementById('textFileContainer');
+                textFileContainer.innerHTML = ''; // Clear existing content
+            }
+        }
+
+
 
         // Display the given table in textFileContainer
         function displayTable(table) {
